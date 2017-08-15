@@ -57,6 +57,46 @@ app.get('/api/students/:id', (req, res) => {
     });
 });
 
+app.get('/api/teachers', function(req, res) {
+  const client = new Client();
+
+  client
+    .connect()
+    .then(() => {
+      const sql = 'SELECT * FROM teacher';
+
+      return client.query(sql);
+    })
+    .then(results => {
+      res.json(results.rows);
+    });
+});
+
+app.get('/api/teachers/:id', (req, res) => {
+  const client = new Client();
+
+  client
+    .connect()
+    .then(() => {
+      const sql = 'SELECT * FROM teacher WHERE teacher_id = $1';
+      const params = [req.params.id];
+
+      return client.query(sql, params);
+    })
+    .then(result => {
+      if (result.rows.length > 0) {
+        res.json(result.rows[0]);
+      } else {
+        res.status(404).json({
+          'error: ': `Teacher ${req.params.id} does not exist.`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send('broke');
+    });
+});
+
 app.listen(process.env.PORT, function() {
   console.log(`Listening on port ${process.env.PORT}`);
 });
