@@ -104,6 +104,34 @@ app.get('/api/teachers/:id', (req, res) => {
     });
 });
 
+app.get('/api/teachers/:id/subjects', (req, res) => {
+  const client = new Client();
+
+  client
+    .connect()
+    .then(() => {
+      let sql = 'SELECT * FROM subject WHERE teacher_id = $1';
+      let params = [req.params.id];
+
+      return client.query(sql, params);
+    })
+    .then(results => {
+      if (results.rows.length > 0) {
+        res.json(results.rows);
+      } else {
+        res
+          .status(404)
+          .json({ error: `Teacher ${req.params.id} does not exist.` });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
+    .then(() => {
+      client.end();
+    });
+});
+
 app.listen(process.env.PORT, function() {
   console.log(`Listening on port ${process.env.PORT}`);
 });

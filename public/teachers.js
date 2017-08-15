@@ -21,6 +21,25 @@ fetch('/api/teachers')
             <div>Name: ${results.first_name} ${results.last_name}</div>
           `;
         });
+
+      fetch(`/api/teachers/${teacherId}/subjects`)
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(results) {
+          console.log(results);
+
+          let teacherSubjectsElement = document.querySelector(
+            '#teacherSubjects'
+          );
+
+          let teacherSubjects = '<h3>Subjects Taught</h3>';
+          results.forEach(function(subject) {
+            teacherSubjects += `<div>${subject.subject_name}</div>`;
+          });
+
+          teacherSubjectsElement.innerHTML = teacherSubjects;
+        });
     });
 
     //1. Loop the results array using a foreach.
