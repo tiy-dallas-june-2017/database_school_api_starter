@@ -63,7 +63,14 @@ app.get('/api/teachers', function(req, res) {
   client
     .connect()
     .then(() => {
-      const sql = 'SELECT * FROM teacher';
+      const sql = `select
+                    teacher.teacher_id,
+                    teacher.first_name,
+                    teacher.last_name,
+                    count(subject_id) as subjects_taught
+                  from teacher
+                  join subject on teacher.teacher_id = subject.teacher_id
+                  group by teacher.teacher_id, teacher.first_name, teacher.last_name`;
 
       return client.query(sql);
     })

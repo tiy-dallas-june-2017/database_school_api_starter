@@ -26,7 +26,8 @@ fetch('/api/teachers')
     //1. Loop the results array using a foreach.
     results.forEach(function(teacher) {
       let listItem = document.createElement('li');
-      listItem.innerHTML = `${teacher.first_name} ${teacher.last_name}`;
+      console.log(teacher);
+      listItem.innerHTML = `${teacher.first_name} ${teacher.last_name} - Subjects Taught: ${teacher.subjects_taught}`;
       listItem.setAttribute('data-teacher-id', teacher.teacher_id);
       teacherList.appendChild(listItem);
       //let listItemMarkup = `<li>${student.firstName}</li>`;
