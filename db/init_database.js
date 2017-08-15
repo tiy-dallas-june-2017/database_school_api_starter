@@ -21,7 +21,7 @@ databaseCheckClient
   })
   .then(function(result) {
     if (result.rows.length === 0) {
-      sql = `CREATE DATABASE ${originalDatabase}`;
+      let sql = `CREATE DATABASE ${originalDatabase}`;
       return databaseCheckClient.query(sql);
     }
     return null;
