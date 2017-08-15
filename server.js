@@ -5,6 +5,8 @@ const app = express();
 
 require('dotenv').config();
 
+app.use(express.static('public'));
+
 app.get('/api/hello/:name?', function(req, res) {
   // let name = '';
   // if (req.params.name) {
