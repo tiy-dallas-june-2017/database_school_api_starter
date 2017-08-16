@@ -143,13 +143,7 @@ app.get('/api/teachers/:id/subjects', (req, res) => {
       return client.query(sql, params);
     })
     .then(results => {
-      if (results.rows.length > 0) {
-        res.json(results.rows);
-      } else {
-        res
-          .status(404)
-          .json({ error: `Teacher ${req.params.id} does not exist.` });
-      }
+      res.json(results.rows);
     })
     .catch(err => {
       console.log(err);

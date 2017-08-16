@@ -77,7 +77,7 @@ teacherList.addEventListener('click', function(evt) {
       return response.json();
     })
     .then(function(results) {
-      console.log(results);
+      console.log('Rendering Subjects', results);
 
       let teacherSubjectsElement = document.querySelector('#teacherSubjects');
 
