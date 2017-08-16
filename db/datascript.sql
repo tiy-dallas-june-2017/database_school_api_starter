@@ -7,13 +7,13 @@ DROP TABLE IF EXISTS subject_student;
 
 
 CREATE TABLE teacher (
-    teacher_id integer PRIMARY KEY,
+    teacher_id serial PRIMARY KEY,
     first_name varchar(50),
     last_name varchar(50)
 );
 
 CREATE TABLE student (
-    student_id integer PRIMARY KEY,
+    student_id serial PRIMARY KEY,
     first_name varchar(50),
     last_name varchar(50),
     gender char(1),
@@ -21,7 +21,7 @@ CREATE TABLE student (
 );
 
 CREATE TABLE subject (
-    subject_id integer PRIMARY KEY,
+    subject_id serial PRIMARY KEY,
     subject_name varchar(50),
     teacher_id integer
 );
@@ -1098,7 +1098,23 @@ INSERT INTO assignment (assignment_date, subject_id, student_id, grade) VALUES (
 INSERT INTO assignment (assignment_date, subject_id, student_id, grade) VALUES ('6/10/17', 4, 19, 80);
 INSERT INTO assignment (assignment_date, subject_id, student_id, grade) VALUES ('6/10/17', 4, 20, 61);
 
+--Resync the serial columns to take into account the inserted values.
+--https://stackoverflow.com/questions/21375651/set-identity-insert-postgresql
+select setval(pg_get_serial_sequence('teacher', 'teacher_id'),
+              (select max(teacher_id) from teacher)
+       );
 
+select setval(pg_get_serial_sequence('student', 'student_id'),
+             (select max(student_id) from student)
+      );
+
+select setval(pg_get_serial_sequence('subject', 'subject_id'),
+             (select max(subject_id) from subject)
+      );
+
+select setval(pg_get_serial_sequence('assignment', 'assignment_id'),
+             (select max(assignment_id) from assignment)
+      );
 
 --SELECT * FROM teacher;
 
