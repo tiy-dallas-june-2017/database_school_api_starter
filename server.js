@@ -1,7 +1,10 @@
 const express = require('express');
 const { Client } = require('pg');
+const bodyParser = require('body-parser');
 
 const app = express();
+
+app.use(bodyParser.json());
 
 require('dotenv').config();
 
@@ -57,6 +60,30 @@ app.get('/api/students/:id', (req, res) => {
     });
 });
 
+app.post('/api/teachers', function(req, res) {
+  console.log(req.body.firstName, req.body.lastName);
+
+  const client = new Client();
+
+  client
+    .connect()
+    .then(() => {
+      let sql = 'INSERT INTO teacher (first_name, last_name) VALUES ($1, $2)';
+      let params = [req.body.firstName, req.body.lastName];
+
+      return client.query(sql, params);
+    })
+    .then(results => {
+      res.status(201).json(results);
+    })
+    .catch(err => {
+      res.status(500).json({ error: err });
+    })
+    .then(() => {
+      client.end();
+    });
+});
+
 app.get('/api/teachers', function(req, res) {
   const client = new Client();
 
@@ -69,7 +96,7 @@ app.get('/api/teachers', function(req, res) {
                     teacher.last_name,
                     count(subject_id) as subjects_taught
                   from teacher
-                  join subject on teacher.teacher_id = subject.teacher_id
+                  left join subject on teacher.teacher_id = subject.teacher_id
                   group by teacher.teacher_id, teacher.first_name, teacher.last_name`;
 
       return client.query(sql);
