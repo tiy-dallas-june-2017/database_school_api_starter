@@ -153,6 +153,29 @@ app.get('/api/teachers/:id/subjects', (req, res) => {
     });
 });
 
+app.post('/api/subjects', function(req, res) {
+  let client = new Client();
+
+  client
+    .connect()
+    .then(() => {
+      let sql =
+        'INSERT INTO subject (subject_name, teacher_id) VALUES ($1, $2)';
+      let params = [req.body.subjectName, req.body.teacherId];
+
+      return client.query(sql, params);
+    })
+    .then(result => {
+      res.status(201).json(result);
+    })
+    .catch(err => {
+      res.status(500).json({ error: err });
+    })
+    .then(() => {
+      client.end();
+    });
+});
+
 app.listen(process.env.PORT, function() {
   console.log(`Listening on port ${process.env.PORT}`);
 });

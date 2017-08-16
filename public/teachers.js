@@ -21,6 +21,32 @@ function fillTeacherList() {
     });
 }
 
+function fillSubjects(teacherId) {
+  fetch(`/api/teachers/${teacherId}/subjects`)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(results) {
+      console.log('Rendering Subjects', results);
+
+      let teacherSubjectsElement = document.querySelector('#teacherSubjects');
+
+      let teacherSubjects = '<h3>Subjects Taught</h3>';
+      teacherSubjects += `<form id='addSubjectForm'>
+        <input type="hidden" id="newTeacherId" value="${teacherId}"/>
+        <input type="text" id='newSubjectName' />
+        <button type="submit" id="addSubjectButton">Add Subject</button>
+      </form>`;
+
+      results.forEach(function(subject) {
+        teacherSubjects += `<div>${subject.subject_name}</div>`;
+      });
+
+      teacherSubjectsElement.innerHTML = teacherSubjects;
+      listenToAddSubjectButton();
+    });
+}
+
 fillTeacherList();
 
 let addTeacherButton = document.querySelector('#addTeacherButton');
@@ -72,20 +98,39 @@ teacherList.addEventListener('click', function(evt) {
         `;
     });
 
-  fetch(`/api/teachers/${teacherId}/subjects`)
-    .then(function(response) {
-      return response.json();
+  fillSubjects(teacherId);
+});
+
+function listenToAddSubjectButton() {
+  let addSubjectButton = document.querySelector('#addSubjectButton');
+  addSubjectButton.addEventListener('click', function(evt) {
+    evt.preventDefault();
+
+    let subjectName = document.querySelector('#newSubjectName');
+    let teacherId = document.querySelector('#newTeacherId');
+
+    let newSubjectData = {
+      subjectName: subjectName.value,
+      teacherId: teacherId.value
+    };
+
+    fetch('/api/subjects', {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(newSubjectData)
     })
-    .then(function(results) {
-      console.log('Rendering Subjects', results);
-
-      let teacherSubjectsElement = document.querySelector('#teacherSubjects');
-
-      let teacherSubjects = '<h3>Subjects Taught</h3>';
-      results.forEach(function(subject) {
-        teacherSubjects += `<div>${subject.subject_name}</div>`;
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(result) {
+        console.log(result);
+        fillSubjects(teacherId.value);
+        fillTeacherList();
       });
 
-      teacherSubjectsElement.innerHTML = teacherSubjects;
-    });
-});
+    console.log('add subject button works!', newSubjectData);
+  });
+}
